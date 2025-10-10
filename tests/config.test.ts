@@ -33,6 +33,7 @@ describe("readConfig", () => {
         DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/123/abc",
         DISCORD_USER_ID: "424242",
         DISCORD_NOTIFY_USER_NAME: undefined,
+        DISCORD_NOTIFY_AVATAR_URL: undefined,
       },
       () => {
         resetConfigCache();
@@ -40,6 +41,7 @@ describe("readConfig", () => {
         expect(config.webhookUrl).toBe("https://discord.com/api/webhooks/123/abc");
         expect(config.userId).toBe("424242");
         expect(config.defaultUsername).toBe("notify-bot");
+        expect(config.avatarUrl).toBeUndefined();
       },
     );
   });
@@ -50,6 +52,7 @@ describe("readConfig", () => {
         DISCORD_WEBHOOK_URL: undefined,
         DISCORD_USER_ID: undefined,
         DISCORD_NOTIFY_USER_NAME: undefined,
+        DISCORD_NOTIFY_AVATAR_URL: undefined,
       },
       () => {
         resetConfigCache();
@@ -64,6 +67,7 @@ describe("readConfig", () => {
         DISCORD_WEBHOOK_URL: "https://example.com/invalid",
         DISCORD_USER_ID: undefined,
         DISCORD_NOTIFY_USER_NAME: undefined,
+        DISCORD_NOTIFY_AVATAR_URL: undefined,
       },
       () => {
         resetConfigCache();
@@ -78,11 +82,43 @@ describe("readConfig", () => {
         DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/123/abc",
         DISCORD_USER_ID: undefined,
         DISCORD_NOTIFY_USER_NAME: "custom-bot",
+        DISCORD_NOTIFY_AVATAR_URL: undefined,
       },
       () => {
         resetConfigCache();
         const config = readConfig();
         expect(config.defaultUsername).toBe("custom-bot");
+      },
+    );
+  });
+
+  it("uses DISCORD_NOTIFY_AVATAR_URL when provided", () => {
+    withEnv(
+      {
+        DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/123/abc",
+        DISCORD_USER_ID: undefined,
+        DISCORD_NOTIFY_USER_NAME: undefined,
+        DISCORD_NOTIFY_AVATAR_URL: "https://example.com/avatar.png",
+      },
+      () => {
+        resetConfigCache();
+        const config = readConfig();
+        expect(config.avatarUrl).toBe("https://example.com/avatar.png");
+      },
+    );
+  });
+
+  it("rejects invalid DISCORD_NOTIFY_AVATAR_URL", () => {
+    withEnv(
+      {
+        DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/123/abc",
+        DISCORD_USER_ID: undefined,
+        DISCORD_NOTIFY_USER_NAME: undefined,
+        DISCORD_NOTIFY_AVATAR_URL: "not-a-url",
+      },
+      () => {
+        resetConfigCache();
+        expect(() => readConfig()).toThrowError(/DISCORD_NOTIFY_AVATAR_URL/);
       },
     );
   });

@@ -9,6 +9,7 @@ type Dependencies = {
 const buildRequestBody = (message: DiscordMessage, config: ValidatedConfig) => ({
   content: message.content,
   username: message.username ?? config.defaultUsername,
+  avatar_url: config.avatarUrl,
   embeds: message.embeds,
   allowed_mentions: message.allowedMentions
     ? {

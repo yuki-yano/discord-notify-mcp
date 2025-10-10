@@ -13,6 +13,10 @@ const envSchema = z.object({
     }),
   DISCORD_USER_ID: z.string({ invalid_type_error: "DISCORD_USER_ID must be a string" }).optional(),
   DISCORD_NOTIFY_USER_NAME: z.string({ invalid_type_error: "DISCORD_NOTIFY_USER_NAME must be a string" }).optional(),
+  DISCORD_NOTIFY_AVATAR_URL: z
+    .string({ invalid_type_error: "DISCORD_NOTIFY_AVATAR_URL must be a string" })
+    .url("DISCORD_NOTIFY_AVATAR_URL must be a valid URL")
+    .optional(),
 });
 
 let cachedConfig: ValidatedConfig | undefined;
@@ -24,6 +28,7 @@ const parseEnv = (inputEnv: NodeJS.ProcessEnv): ValidatedEnv => {
     DISCORD_WEBHOOK_URL: inputEnv.DISCORD_WEBHOOK_URL?.trim(),
     DISCORD_USER_ID: inputEnv.DISCORD_USER_ID?.trim(),
     DISCORD_NOTIFY_USER_NAME: inputEnv.DISCORD_NOTIFY_USER_NAME?.trim(),
+    DISCORD_NOTIFY_AVATAR_URL: inputEnv.DISCORD_NOTIFY_AVATAR_URL?.trim(),
   };
   const result = envSchema.safeParse(candidate);
   if (result.success) {
@@ -36,6 +41,7 @@ const parseEnv = (inputEnv: NodeJS.ProcessEnv): ValidatedEnv => {
     '  export DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/<id>/<token>"',
     '  # optional: export DISCORD_USER_ID="<target-user-id>"',
     '  # optional: export DISCORD_NOTIFY_USER_NAME="notify-bot"',
+    '  # optional: export DISCORD_NOTIFY_AVATAR_URL="https://example.com/avatar.png"',
     ...issues,
   ].join("\n");
   throw new Error(guidance);
@@ -51,6 +57,7 @@ export const readConfig = (): ValidatedConfig => {
     webhookUrl: parsed.DISCORD_WEBHOOK_URL,
     defaultUsername: parsed.DISCORD_NOTIFY_USER_NAME || fallbackUsername,
     ...(parsed.DISCORD_USER_ID ? { userId: parsed.DISCORD_USER_ID } : {}),
+    ...(parsed.DISCORD_NOTIFY_AVATAR_URL ? { avatarUrl: parsed.DISCORD_NOTIFY_AVATAR_URL } : {}),
   };
   return cachedConfig;
 };

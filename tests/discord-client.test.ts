@@ -3,10 +3,12 @@ import { describe, expect, it, vi } from "vitest";
 import { createDiscordClient } from "../src/discord";
 import type { DiscordMessage, ValidatedConfig } from "../src/types";
 
-const buildConfig = (): ValidatedConfig => ({
+const buildConfig = (overrides: Partial<ValidatedConfig> = {}): ValidatedConfig => ({
   webhookUrl: "https://discord.com/api/webhooks/123/abc",
   defaultUsername: "notify-bot",
   userId: "4242",
+  avatarUrl: "https://example.com/avatar.png",
+  ...overrides,
 });
 
 describe("createDiscordClient", () => {
@@ -32,6 +34,8 @@ describe("createDiscordClient", () => {
     const secondCallBody = JSON.parse(String(secondInit.body));
     expect(firstCallBody.content).toBe("message-1");
     expect(secondCallBody.content).toBe("message-2");
+    expect(firstCallBody.avatar_url).toBe("https://example.com/avatar.png");
+    expect(secondCallBody.avatar_url).toBe("https://example.com/avatar.png");
   });
 
   it("throws an error when Discord returns a non-2xx status", async () => {

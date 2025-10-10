@@ -25,4 +25,5 @@ export type ValidatedConfig = {
   readonly webhookUrl: string;
   readonly userId?: string;
   readonly defaultUsername: string;
+  readonly avatarUrl?: string;
 };
