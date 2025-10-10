@@ -32,13 +32,14 @@ describe("readConfig", () => {
       {
         DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/123/abc",
         DISCORD_USER_ID: "424242",
+        DISCORD_NOTIFY_USER_NAME: undefined,
       },
       () => {
         resetConfigCache();
         const config = readConfig();
         expect(config.webhookUrl).toBe("https://discord.com/api/webhooks/123/abc");
         expect(config.userId).toBe("424242");
-        expect(config.defaultUsername.length).toBeGreaterThan(0);
+        expect(config.defaultUsername).toBe("notify-bot");
       },
     );
   });
@@ -48,6 +49,7 @@ describe("readConfig", () => {
       {
         DISCORD_WEBHOOK_URL: undefined,
         DISCORD_USER_ID: undefined,
+        DISCORD_NOTIFY_USER_NAME: undefined,
       },
       () => {
         resetConfigCache();
@@ -61,10 +63,26 @@ describe("readConfig", () => {
       {
         DISCORD_WEBHOOK_URL: "https://example.com/invalid",
         DISCORD_USER_ID: undefined,
+        DISCORD_NOTIFY_USER_NAME: undefined,
       },
       () => {
         resetConfigCache();
         expect(() => readConfig()).toThrowError(/discord\.com\/api\/webhooks/);
+      },
+    );
+  });
+
+  it("uses DISCORD_NOTIFY_USER_NAME when provided", () => {
+    withEnv(
+      {
+        DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/123/abc",
+        DISCORD_USER_ID: undefined,
+        DISCORD_NOTIFY_USER_NAME: "custom-bot",
+      },
+      () => {
+        resetConfigCache();
+        const config = readConfig();
+        expect(config.defaultUsername).toBe("custom-bot");
       },
     );
   });

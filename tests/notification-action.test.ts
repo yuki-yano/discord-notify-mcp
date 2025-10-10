@@ -7,7 +7,7 @@ type PostMessages = (messages: readonly unknown[], config: ValidatedConfig) => P
 
 const baseConfig: ValidatedConfig = {
   webhookUrl: "https://discord.com/api/webhooks/123/abc",
-  defaultUsername: "discord-notify-mcp",
+  defaultUsername: "notify-bot",
   userId: "777",
 };
 

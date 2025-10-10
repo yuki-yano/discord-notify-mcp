@@ -5,7 +5,7 @@ import type { DiscordMessage, ValidatedConfig } from "../src/types";
 
 const buildConfig = (): ValidatedConfig => ({
   webhookUrl: "https://discord.com/api/webhooks/123/abc",
-  defaultUsername: "discord-notify-mcp",
+  defaultUsername: "notify-bot",
   userId: "4242",
 });
 

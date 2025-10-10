@@ -45,7 +45,7 @@ export const createApplication = (dependencies: Dependencies = {}) => {
   const server = instantiateServer();
 
   server.registerTool(
-    "discord-notify",
+    "notify",
     {
       title: "Send a Discord notification",
       description: "Deliver a message via the configured Discord webhook.",
@@ -67,7 +67,7 @@ export const createApplication = (dependencies: Dependencies = {}) => {
   const start = async (): Promise<void> => {
     const transport = instantiateTransport();
     await server.connect(transport);
-    dependencies.logger?.info?.("discord-notify-mcp server started.");
+    dependencies.logger?.info?.("notify server started.");
   };
 
   return {

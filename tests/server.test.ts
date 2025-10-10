@@ -6,7 +6,7 @@ import type { NotificationPayload, ValidatedConfig } from "../src/types";
 
 const stubConfig: ValidatedConfig = {
   webhookUrl: "https://discord.com/api/webhooks/123/abc",
-  defaultUsername: "discord-notify-mcp",
+  defaultUsername: "notify-bot",
 };
 
 type ServerShape = Pick<McpServer, "registerTool" | "connect">;
@@ -39,7 +39,7 @@ describe("createApplication", () => {
     await app.start();
 
     expect(registerTool).toHaveBeenCalledWith(
-      "discord-notify",
+      "notify",
       expect.objectContaining({
         description: expect.stringContaining("Discord"),
         inputSchema: expect.any(Object),

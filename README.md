@@ -4,7 +4,7 @@
 
 ## Features
 
-- **Discord notification tool** – Publishes a `discord-notify` MCP tool that sends messages to the Discord webhook configured via `DISCORD_WEBHOOK_URL`.
+- **Discord notification tool** – Publishes a `notify` MCP tool that sends messages to the Discord webhook configured via `DISCORD_WEBHOOK_URL`.
 - **User mention support** – When `DISCORD_USER_ID` is set, the tool prefixes the message with a mention so the specified user receives a notification.
 - **Automatic chunking** – Splits payloads longer than 2000 characters into sequential messages to respect Discord’s content limit.
 
@@ -13,6 +13,7 @@
 - Bun v1.2 or newer
 - `DISCORD_WEBHOOK_URL` environment variable containing a valid Discord webhook URL
 - (Optional) `DISCORD_USER_ID` for automatic user mentions
+- (Optional) `DISCORD_NOTIFY_USER_NAME` to override the username displayed in Discord
 
 ## Installation
 
@@ -26,6 +27,8 @@ Configure the required environment variables via your shell, `.env`, or a proces
 export DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/<id>/<token>"
 # Optional
 export DISCORD_USER_ID="<discord-user-id>"
+# Optional
+export DISCORD_NOTIFY_USER_NAME="notify-bot"
 ```
 
 ## Running the server
@@ -42,22 +45,24 @@ bun run dev
 claude mcp add \
   --env DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/<id>/<token>" \
   --env DISCORD_USER_ID="<discord-user-id>" \
-  discord-notify -- bunx discord-notify-mcp@latest
+  --env DISCORD_NOTIFY_USER_NAME="notify-bot" \
+  notify -- bunx discord-notify-mcp@latest
 ```
 
 ### Codex CLI configuration
 
 ```toml
-[mcp_servers.discord-notify]
+[mcp_servers.notify]
 command = "bunx"
 args = ["discord-notify-mcp@latest"]
 
-[mcp_servers.discord-notify.env]
+[mcp_servers.notify.env]
 DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/<id>/<token>"
 DISCORD_USER_ID = "discord-user-id"
+DISCORD_NOTIFY_USER_NAME = "notify-bot"
 ```
 
-The process stays attached to STDIN/STDOUT, waiting for MCP traffic. Once your client sends `initialize`, the `discord-notify` tool becomes available.
+The process stays attached to STDIN/STDOUT, waiting for MCP traffic. Once your client sends `initialize`, the `notify` tool becomes available.
 
 ## Invoking the tool
 
@@ -66,7 +71,7 @@ Send a tool call from your MCP client similar to the payload below:
 ```jsonc
 {
   "type": "tool",
-  "toolName": "discord-notify",
+  "toolName": "notify",
   "arguments": {
     "content": "Deployment complete ✅",
     "username": "Release Bot",
