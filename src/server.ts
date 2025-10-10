@@ -25,7 +25,7 @@ type Dependencies = {
 };
 
 const serverInfo = {
-  name: "discord-notify-mcp",
+  name: "discord-notify",
   version: "0.1.0",
 };
 
@@ -67,7 +67,7 @@ export const createApplication = (dependencies: Dependencies = {}) => {
   const start = async (): Promise<void> => {
     const transport = instantiateTransport();
     await server.connect(transport);
-    dependencies.logger?.info?.("notify server started.");
+    dependencies.logger?.info?.("discord-notify server started.");
   };
 
   return {
