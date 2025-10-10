@@ -75,10 +75,11 @@ describe("createNotificationAction", () => {
     expect(combined.replace("**Summary**", "").replace(/\n/g, "")).toContain(longContent);
   });
 
-  it("throws when content is empty", async () => {
+  it("throws when title or body is empty", async () => {
     const action = createAction();
 
-    await expect(action({ title: "" })).rejects.toThrowError(/title/i);
+    await expect(action({ title: "", body: "body" })).rejects.toThrowError(/title/i);
+    await expect(action({ title: "title", body: "" })).rejects.toThrowError(/body/i);
   });
 
   it("throws when chunk size is zero or negative", () => {

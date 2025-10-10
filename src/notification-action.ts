@@ -4,7 +4,7 @@ import type { DiscordMessage, NotificationPayload, ValidatedConfig } from "./typ
 
 export const notificationPayloadSchema = z.object({
   title: z.string().min(1, "title must not be empty"),
-  body: z.string().optional(),
+  body: z.string().min(1, "body must not be empty"),
   embeds: z
     .array(
       z.object({
@@ -85,7 +85,7 @@ export const createNotificationAction = (dependencies: Dependencies) => {
     const parsed = notificationPayloadSchema.parse(input);
     const payload: NotificationPayload = {
       title: parsed.title,
-      ...(parsed.body ? { body: parsed.body } : {}),
+      body: parsed.body,
       ...(parsed.username ? { username: parsed.username } : {}),
       ...(parsed.embeds ? { embeds: parsed.embeds } : {}),
     };

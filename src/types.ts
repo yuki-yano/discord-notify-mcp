@@ -16,7 +16,7 @@ export type DiscordMessage = {
 
 export type NotificationPayload = {
   readonly title: string;
-  readonly body?: string | undefined;
+  readonly body: string;
   readonly embeds?: DiscordEmbed[] | undefined;
   readonly username?: string | undefined;
 };
