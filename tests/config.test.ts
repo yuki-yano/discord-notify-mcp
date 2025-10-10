@@ -1,0 +1,71 @@
+import { describe, expect, it } from "vitest";
+
+import { readConfig, resetConfigCache } from "../src/config";
+
+const withEnv = (env: Record<string, string | undefined>, assertion: () => void) => {
+  const original = { ...process.env };
+  for (const [key, value] of Object.entries(env)) {
+    if (typeof value === "undefined") {
+      delete process.env[key];
+    } else {
+      process.env[key] = value;
+    }
+  }
+
+  try {
+    assertion();
+  } finally {
+    for (const key of Object.keys(process.env)) {
+      if (!(key in original)) {
+        delete process.env[key];
+      }
+    }
+    for (const [key, value] of Object.entries(original)) {
+      process.env[key] = value;
+    }
+  }
+};
+
+describe("readConfig", () => {
+  it("returns validated configuration when env variables are set", () => {
+    withEnv(
+      {
+        DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/123/abc",
+        DISCORD_USER_ID: "424242",
+      },
+      () => {
+        resetConfigCache();
+        const config = readConfig();
+        expect(config.webhookUrl).toBe("https://discord.com/api/webhooks/123/abc");
+        expect(config.userId).toBe("424242");
+        expect(config.defaultUsername.length).toBeGreaterThan(0);
+      },
+    );
+  });
+
+  it("throws descriptive error when webhook URL is missing", () => {
+    withEnv(
+      {
+        DISCORD_WEBHOOK_URL: undefined,
+        DISCORD_USER_ID: undefined,
+      },
+      () => {
+        resetConfigCache();
+        expect(() => readConfig()).toThrowError(/DISCORD_WEBHOOK_URL/);
+      },
+    );
+  });
+
+  it("throws descriptive error when webhook URL is not a Discord webhook", () => {
+    withEnv(
+      {
+        DISCORD_WEBHOOK_URL: "https://example.com/invalid",
+        DISCORD_USER_ID: undefined,
+      },
+      () => {
+        resetConfigCache();
+        expect(() => readConfig()).toThrowError(/discord\.com\/api\/webhooks/);
+      },
+    );
+  });
+});

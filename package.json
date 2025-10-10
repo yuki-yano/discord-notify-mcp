@@ -1,0 +1,31 @@
+{
+  "name": "discord-notify-mcp",
+  "version": "0.0.1",
+  "type": "module",
+  "bin": {
+    "discord-notify-mcp": "dist/main.js"
+  },
+  "files": ["dist", "src", "README.md"],
+  "scripts": {
+    "dev": "bun run src/main.ts",
+    "build": "tsdown --config tsdown.config.ts",
+    "prepare": "tsdown --config tsdown.config.ts",
+    "format": "biome format --write",
+    "format:check": "biome check --linter-enabled=false",
+    "lint": "biome lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "ci": "bun run format:check && bun run typecheck && bun run lint && bun run test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
+    "@types/node": "^22.10.1",
+    "tsdown": "^0.4.0",
+    "typescript": "^5.5.4",
+    "vitest": "^1.6.0"
+  }
+}
