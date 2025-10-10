@@ -15,7 +15,8 @@ export type DiscordMessage = {
 };
 
 export type NotificationPayload = {
-  readonly content: string;
+  readonly title: string;
+  readonly body?: string | undefined;
   readonly embeds?: DiscordEmbed[] | undefined;
   readonly username?: string | undefined;
 };

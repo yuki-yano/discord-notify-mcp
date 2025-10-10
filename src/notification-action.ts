@@ -3,7 +3,8 @@ import { z } from "zod";
 import type { DiscordMessage, NotificationPayload, ValidatedConfig } from "./types";
 
 export const notificationPayloadSchema = z.object({
-  content: z.string().min(1, "content must not be empty"),
+  title: z.string().min(1, "title must not be empty"),
+  body: z.string().optional(),
   embeds: z
     .array(
       z.object({
@@ -39,13 +40,18 @@ const createChunks = (value: string, chunkSize: number): readonly string[] => {
 };
 
 const buildMessages = (
-  content: string,
   payload: NotificationPayload,
   config: ValidatedConfig,
   chunkSize: number,
 ): readonly DiscordMessage[] => {
-  const withMention = config.userId ? `<@${config.userId}> ${content}` : content;
-  const chunks = createChunks(withMention, chunkSize);
+  const lines: string[] = [];
+  const firstLine = config.userId ? `<@${config.userId}> **${payload.title}**` : `**${payload.title}**`;
+  lines.push(firstLine);
+  if (typeof payload.body === "string" && payload.body.trim().length > 0) {
+    lines.push(payload.body);
+  }
+  const content = lines.join("\n");
+  const chunks = createChunks(content, chunkSize);
   return chunks.map((chunk, chunkIndex) => ({
     content: chunk,
     username: payload.username ?? config.defaultUsername,
@@ -78,12 +84,13 @@ export const createNotificationAction = (dependencies: Dependencies) => {
   return async (input: NotificationPayload): Promise<void> => {
     const parsed = notificationPayloadSchema.parse(input);
     const payload: NotificationPayload = {
-      content: parsed.content,
+      title: parsed.title,
+      ...(parsed.body ? { body: parsed.body } : {}),
       ...(parsed.username ? { username: parsed.username } : {}),
       ...(parsed.embeds ? { embeds: parsed.embeds } : {}),
     };
     const config = dependencies.configProvider();
-    const messages = buildMessages(payload.content, payload, config, chunkSize);
+    const messages = buildMessages(payload, config, chunkSize);
     await dependencies.discordClient.postMessages(messages, config);
   };
 };

@@ -68,7 +68,7 @@ describe("createApplication", () => {
     const app = createApplication(dependencies);
 
     await app.start();
-    await toolHandler?.({ content: "hello" });
+    await toolHandler?.({ title: "hello", body: "world" });
 
     expect(postMessages).toHaveBeenCalled();
   });

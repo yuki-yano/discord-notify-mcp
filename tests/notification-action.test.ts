@@ -29,7 +29,8 @@ describe("createNotificationAction", () => {
     const postMessagesMock = vi.fn(async () => {});
     const action = createAction(baseConfig, postMessagesMock);
     const payload: NotificationPayload = {
-      content: "Deployment finished",
+      title: "Deployment finished",
+      body: "All services are healthy.",
       username: "bot",
     };
 
@@ -45,6 +46,7 @@ describe("createNotificationAction", () => {
     const firstMessage = messages[0];
     expect(firstMessage).toBeDefined();
     expect(firstMessage?.content).toContain("<@777>");
+    expect(firstMessage?.content.startsWith("<@777> **Deployment finished**")).toBe(true);
     expect(firstMessage?.allowedMentions?.users).toContain("777");
     expect(firstMessage?.username).toBe("bot");
   });
@@ -58,7 +60,7 @@ describe("createNotificationAction", () => {
     };
     const action = createAction(configWithoutUser, postMessagesMock);
 
-    await action({ content: longContent });
+    await action({ title: "Summary", body: longContent });
 
     const call = postMessagesMock.mock.calls[0];
     if (!call) {
@@ -68,13 +70,15 @@ describe("createNotificationAction", () => {
     expect(messages).toHaveLength(2);
     expect(messages[0]?.content.length).toBeLessThanOrEqual(2000);
     expect(messages[1]?.content.length).toBeLessThanOrEqual(2000);
-    expect(messages.map((message) => message.content).join("")).toBe(longContent);
+    const combined = messages.map((message) => message.content).join("");
+    expect(combined).toContain("**Summary**");
+    expect(combined.replace("**Summary**", "").replace(/\n/g, "")).toContain(longContent);
   });
 
   it("throws when content is empty", async () => {
     const action = createAction();
 
-    await expect(action({ content: "" })).rejects.toThrowError(/content/i);
+    await expect(action({ title: "" })).rejects.toThrowError(/title/i);
   });
 
   it("throws when chunk size is zero or negative", () => {
@@ -94,7 +98,7 @@ describe("createNotificationAction", () => {
       5000,
     );
 
-    await action({ content: longContent });
+    await action({ title: "Large", body: longContent });
 
     const call = postMessagesMock.mock.calls[0];
     if (!call) {

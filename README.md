@@ -73,19 +73,14 @@ Send a tool call from your MCP client similar to the payload below:
   "type": "tool",
   "toolName": "notify",
   "arguments": {
-    "content": "Deployment complete ✅",
-    "username": "Release Bot",
-    "embeds": [
-      {
-        "title": "Version 1.2.0",
-        "description": "Commit abc123 deployed successfully"
-      }
-    ]
+    "title": "Deployment complete ✅",
+    "body": "Release Bot confirmed that all services are healthy.",
+    "username": "Release Bot"
   }
 }
 ```
 
-If `DISCORD_USER_ID` is configured, the first chunk automatically prefixes the content with `<@userId>` and sets the `allowed_mentions.users` field so Discord performs the mention.
+If `DISCORD_USER_ID` is configured, the first line automatically becomes `<@userId> **title**`, and the tool sets `allowed_mentions.users` so Discord performs the mention while preventing accidental mass pings.
 
 ## Project scripts
 
