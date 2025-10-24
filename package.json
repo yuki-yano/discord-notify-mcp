@@ -1,13 +1,13 @@
 {
   "name": "discord-notify-mcp",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "type": "module",
   "bin": {
     "discord-notify-mcp": "dist/main.js"
   },
   "files": ["dist", "src", "README.md"],
   "scripts": {
-    "dev": "bun run src/main.ts",
+    "dev": "tsdown --config tsdown.config.ts --watch",
     "build": "tsdown --config tsdown.config.ts",
     "prepare": "tsdown --config tsdown.config.ts",
     "format": "biome format --write",
