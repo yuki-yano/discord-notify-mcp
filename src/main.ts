@@ -4,7 +4,7 @@ import { createApplication } from "./server";
 
 const logger = {
   info: (message: string) => {
-    console.log(message);
+    process.stderr.write(`${message}\n`);
   },
   error: (error: unknown) => {
     console.error(error);
